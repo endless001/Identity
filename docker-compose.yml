@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  identity-api:
+    image: identity.api
+    build:
+      context: .
+      dockerfile: src/Identity.API/Dockerfile
+  identity-administration:
+    image: identity.administration
+    build:
+      context: .
+      dockerfile: src/Identity.Administration/Dockerfile

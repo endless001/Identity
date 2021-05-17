@@ -1,0 +1,33 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Message.API.Grpc";
+
+package Message;
+
+// The greeting service definition.
+service MessageGrpc {
+  // Sends a greeting
+  rpc SendSMS (SMSRequest) returns (MessageReply);
+  rpc SendMail (MailRequest) returns (MessageReply);
+
+}
+
+// The request message containing the user's name.
+message SMSRequest {
+  string phone = 1;
+  int32  nationCode = 2;
+  int32 templateId = 3;
+  repeated string content = 4;
+
+}
+
+message MailRequest{
+  string address = 1;
+  string content = 2;
+}
+
+// The response message containing the greetings.
+message MessageReply {
+  int32 code = 1;
+  string message = 2;
+}

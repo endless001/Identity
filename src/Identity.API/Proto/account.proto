@@ -1,0 +1,32 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Account.API.Grpc";
+
+package Account;
+
+// The greeting service definition.
+service AccountGrpc {
+  // Sends a greeting
+    rpc CheckOrCreate (AccountRequest) returns (AccountReply);
+    rpc Search (AccountRequest) returns (AccountReply);
+	rpc RegisterPhone (AccountRequest) returns (AccountReply);
+	rpc RegisterEmail (AccountRequest) returns (AccountReply);
+}
+
+// The request message containing the user's name.
+message AccountRequest {
+	int32  accountId = 1;
+	string accountName  = 2;
+	string avatar   = 3;
+	string phone = 4;
+	int32  sex =5;
+	string tel=6;
+	string email =7;
+	string password=8;
+}
+
+// The response message containing the greetings.
+message AccountReply {
+  int32  code = 1;
+  string message = 2;
+}
