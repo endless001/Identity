@@ -10,6 +10,7 @@ namespace Identity.API.Models.ViewModels
     {
         [Required]
         public string AccountName { get; set; }
+        [Required]
         public string Password { get; set; }
         public string LogoutId { get; set; }
         public bool RememberMe { get; set; }

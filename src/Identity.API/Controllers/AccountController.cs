@@ -19,172 +19,178 @@ using System.Threading.Tasks;
 
 namespace Identity.API.Controllers
 {
-  public class AccountController : Controller
-  {
-    private readonly IAccountService _accountService;
-    private readonly IIdentityServerInteractionService _interaction;
-    private readonly IConfiguration _configuration;
-    private readonly IEventService _events;
-    private readonly ILogger<AccountController> _logger;
-
-    [HttpGet]
-    public IActionResult Login(string returnUrl)
+    public class AccountController : Controller
     {
-      ViewData["ReturnUrl"] = returnUrl;
-      return View();
-    }
+        private readonly IAccountService _accountService;
+        private readonly IIdentityServerInteractionService _interaction;
+        private readonly IConfiguration _configuration;
+        private readonly IEventService _events;
+        private readonly ILogger<AccountController> _logger;
 
-    [HttpGet]
-    public IActionResult Register()
-    {
-      return View();
-    }
-
-    [HttpGet]
-    public IActionResult ResetPassword()
-    {
-      return View();
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> Login(LoginViewModel model)
-    {
-      if (ModelState.IsValid)
-      {
-        var account = await _accountService.PasswordSignInAsync(model.AccountName, model.Password);
-        if (account != null)
+        public AccountController()
         {
 
-          var tokenLifetime = _configuration.GetValue("TokenLifetimeMinutes", 120);
-          var props = new AuthenticationProperties
-          {
-            ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(tokenLifetime),
-            AllowRefresh = true,
-            RedirectUri = model.ReturnUrl
-          };
-          if (model.RememberMe)
-          {
-            var permanentTokenLifetime = _configuration.GetValue("PermanentTokenLifetimeDays", 365);
-            props.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(permanentTokenLifetime);
-            props.IsPersistent = true;
-          }
-
-          ;
-
-          await _events.RaiseAsync(new UserLoginSuccessEvent(account.AccountName, account.AccountId.ToString(),
-            account.AccountName));
-
-          if (_interaction.IsValidReturnUrl(model.ReturnUrl))
-          {
-            return Redirect(model.ReturnUrl);
-          }
-
-          return Redirect("~/");
         }
 
-        ModelState.AddModelError(string.Empty, "Invalid username or password.");
-
-      }
-
-      var vm = await BuildLoginViewModelAsync(model);
-
-      ViewData["ReturnUrl"] = model.ReturnUrl;
-
-      return View(vm);
-    }
-
-
-
-    [HttpGet]
-    public async Task<IActionResult> Logout(string logoutId)
-    {
-      if (User.Identity.IsAuthenticated == false)
-      {
-        // if the user is not authenticated, then just show logged out page
-        return await Logout(new LoginViewModel {LogoutId = logoutId});
-      }
-
-      //Test for Xamarin.
-      var context = await _interaction.GetLogoutContextAsync(logoutId);
-      if (context?.ShowSignoutPrompt == false)
-      {
-        //it's safe to automatically sign-out
-        return await Logout(new LoginViewModel {LogoutId = logoutId});
-      }
-
-      // show the logout prompt. this prevents attacks where the user
-      // is automatically signed out by another malicious web page.
-      var vm = new LoginViewModel
-      {
-        LogoutId = logoutId
-      };
-      return Redirect("login");
-
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout(LoginViewModel model)
-    {
-      var idp = User?.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
-
-      if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
-      {
-        if (model.LogoutId == null)
+        [HttpGet]
+        public IActionResult Login(string returnUrl)
         {
-          // if there's no current logout context, we need to create one
-          // this captures necessary info from the current logged in user
-          // before we signout and redirect away to the external IdP for signout
-          model.LogoutId = await _interaction.CreateLogoutContextAsync();
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
         }
 
-        string url = "/Account/Logout?logoutId=" + model.LogoutId;
+        [HttpGet]
+        public IActionResult Register()
+        {
+            return View();
+        }
 
-        try
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var account = await _accountService.PasswordSignInAsync(model.AccountName, model.Password);
+                if (account != null)
+                {
+
+                    var tokenLifetime = _configuration.GetValue("TokenLifetimeMinutes", 120);
+                    var props = new AuthenticationProperties
+                    {
+                        ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(tokenLifetime),
+                        AllowRefresh = true,
+                        RedirectUri = model.ReturnUrl
+                    };
+
+                    if (model.RememberMe)
+                    {
+                        var permanentTokenLifetime = _configuration.GetValue("PermanentTokenLifetimeDays", 365);
+                        props.ExpiresUtc = DateTimeOffset.UtcNow.AddDays(permanentTokenLifetime);
+                        props.IsPersistent = true;
+                    }
+
+
+                    await _events.RaiseAsync(new UserLoginSuccessEvent(account.AccountName, account.AccountId.ToString(),
+                      account.AccountName));
+
+                    if (_interaction.IsValidReturnUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+
+                    return Redirect("~/");
+                }
+
+                ModelState.AddModelError(string.Empty, "Invalid username or password.");
+
+            }
+
+            var vm = await BuildLoginViewModelAsync(model);
+
+            ViewData["ReturnUrl"] = model.ReturnUrl;
+
+            return View(vm);
+        }
+
+
+
+        [HttpGet]
+        public async Task<IActionResult> Logout(string logoutId)
+        {
+            if (User.Identity.IsAuthenticated == false)
+            {
+                // if the user is not authenticated, then just show logged out page
+                return await Logout(new LoginViewModel { LogoutId = logoutId });
+            }
+
+            //Test for Xamarin.
+            var context = await _interaction.GetLogoutContextAsync(logoutId);
+            if (context?.ShowSignoutPrompt == false)
+            {
+                //it's safe to automatically sign-out
+                return await Logout(new LoginViewModel { LogoutId = logoutId });
+            }
+
+            // show the logout prompt. this prevents attacks where the user
+            // is automatically signed out by another malicious web page.
+            var vm = new LoginViewModel
+            {
+                LogoutId = logoutId
+            };
+            return Redirect("login");
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout(LoginViewModel model)
+        {
+            var idp = User?.FindFirst(JwtClaimTypes.IdentityProvider)?.Value;
+
+            if (idp != null && idp != IdentityServerConstants.LocalIdentityProvider)
+            {
+                if (model.LogoutId == null)
+                {
+                    // if there's no current logout context, we need to create one
+                    // this captures necessary info from the current logged in user
+                    // before we signout and redirect away to the external IdP for signout
+                    model.LogoutId = await _interaction.CreateLogoutContextAsync();
+                }
+
+                string url = "/Account/Logout?logoutId=" + model.LogoutId;
+
+                try
+                {
+
+                    // hack: try/catch to handle social providers that throw
+                    await HttpContext.SignOutAsync(idp, new AuthenticationProperties
+                    {
+                        RedirectUri = url
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "LOGOUT ERROR: {ExceptionMessage}", ex.Message);
+                }
+            }
+
+            await HttpContext.SignOutAsync();
+
+            await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
+
+            HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
+
+            var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
+
+            return Redirect(logout?.PostLogoutRedirectUri);
+        }
+
+
+
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, AuthorizationRequest context)
         {
 
-          // hack: try/catch to handle social providers that throw
-          await HttpContext.SignOutAsync(idp, new AuthenticationProperties
-          {
-            RedirectUri = url
-          });
+            return new LoginViewModel
+            {
+                ReturnUrl = returnUrl,
+                AccountName = context?.LoginHint,
+            };
         }
-        catch (Exception ex)
+
+        private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginViewModel model)
         {
-          _logger.LogError(ex, "LOGOUT ERROR: {ExceptionMessage}", ex.Message);
+            var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
+            var vm = await BuildLoginViewModelAsync(model.ReturnUrl, context);
+            vm.AccountName = model.AccountName;
+            vm.RememberMe = model.RememberMe;
+            return vm;
         }
-      }
-
-      await HttpContext.SignOutAsync();
-
-      await HttpContext.SignOutAsync(IdentityConstants.ApplicationScheme);
-
-      HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity());
-
-      var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
-
-      return Redirect(logout?.PostLogoutRedirectUri);
     }
-
-
-
-    private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, AuthorizationRequest context)
-    {
-
-      return new LoginViewModel
-      {
-        ReturnUrl = returnUrl,
-        AccountName = context?.LoginHint,
-      };
-    }
-
-    private async Task<LoginViewModel> BuildLoginViewModelAsync(LoginViewModel model)
-    {
-      var context = await _interaction.GetAuthorizationContextAsync(model.ReturnUrl);
-      var vm = await BuildLoginViewModelAsync(model.ReturnUrl, context);
-      vm.AccountName = model.AccountName;
-      vm.RememberMe = model.RememberMe;
-      return vm;
-    }
-  }
 }
