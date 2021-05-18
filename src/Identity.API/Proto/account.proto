@@ -7,10 +7,12 @@ package Account;
 // The greeting service definition.
 service AccountGrpc {
   // Sends a greeting
-    rpc CheckOrCreate (AccountRequest) returns (AccountReply);
-    rpc Search (AccountRequest) returns (AccountReply);
-	rpc RegisterPhone (AccountRequest) returns (AccountReply);
-	rpc RegisterEmail (AccountRequest) returns (AccountReply);
+  rpc CheckOrCreate (AccountRequest) returns (AccountReply);
+  rpc Search (AccountRequest) returns (AccountReply);
+  rpc RegisterPhone (AccountRequest) returns (AccountReply);
+  rpc RegisterEmail (AccountRequest) returns (AccountReply);
+  rpc PasswordSignIn (AccountRequest) returns (AccountReply);
+
 }
 
 // The request message containing the user's name.

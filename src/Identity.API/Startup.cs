@@ -10,6 +10,7 @@ using IdentityServer4.Services;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 
 namespace Identity.API
 {
@@ -59,7 +61,17 @@ namespace Identity.API
           services.AddScoped<IAccountService, AccountService>();
           services.AddScoped<IVerifyService, VerifyService>();
           services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+
+
+          services.AddSingleton<ConnectionMultiplexer>(sp =>
+          {
+            var configuration = ConfigurationOptions.Parse(Configuration.GetValue<string>("RedisConfig:ConnectionString"), true);
+            configuration.ResolveDns = true;
+            return ConnectionMultiplexer.Connect(configuration);
+          });
+
           services.AddControllersWithViews();
+          services.AddHealthChecks();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -71,7 +83,10 @@ namespace Identity.API
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
+              endpoints.MapHealthChecks("/health");
+              endpoints.MapHealthChecks("/liveness");
+
+              endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             });

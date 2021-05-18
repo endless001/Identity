@@ -25,18 +25,37 @@ namespace Identity.API.Controllers
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IConfiguration _configuration;
         private readonly IEventService _events;
+        private readonly IClientStore _clientStore;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController()
+        public AccountController(IAccountService accountService,
+          IIdentityServerInteractionService interaction,
+          IConfiguration configuration,
+          IEventService events,
+          IClientStore clientStore,
+          ILogger<AccountController> logger)
         {
-
+          _accountService = accountService;
+          _interaction = interaction;
+          _configuration = configuration;
+          _events = events;
+          _clientStore = clientStore;
+          _logger = logger;
         }
 
         [HttpGet]
-        public IActionResult Login(string returnUrl)
+        public async Task<IActionResult> Login(string returnUrl)
         {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
+
+          var context = await _interaction.GetAuthorizationContextAsync(returnUrl);
+          if (context?.IdP != null)
+          {
+            throw new NotImplementedException("External login is not implemented!");
+          }
+
+          var vm = await BuildLoginViewModelAsync(returnUrl, context);
+          ViewData["ReturnUrl"] = returnUrl;
+          return View();
         }
 
         [HttpGet]
@@ -76,15 +95,27 @@ namespace Identity.API.Controllers
                         props.IsPersistent = true;
                     }
 
-
                     await _events.RaiseAsync(new UserLoginSuccessEvent(account.AccountName, account.AccountId.ToString(),
                       account.AccountName));
+
+                    var claims = new List<Claim>
+                    {
+                      new Claim("accountId",account.AccountId.ToString()),
+                      new Claim("accountName",account.AccountName??string.Empty),
+                      new Claim("avatar",account.Avatar??string.Empty),
+                      new Claim("phone",account.Phone??string.Empty),
+                      new Claim("email",account.Email??string.Empty)
+                    };
+
+                    var identity = new ClaimsIdentity(claims, "Passport");
+
+                    var principal = new ClaimsPrincipal(identity);
+                    await HttpContext.SignInAsync(principal,props);
 
                     if (_interaction.IsValidReturnUrl(model.ReturnUrl))
                     {
                         return Redirect(model.ReturnUrl);
                     }
-
                     return Redirect("~/");
                 }
 
@@ -177,7 +208,17 @@ namespace Identity.API.Controllers
         private async Task<LoginViewModel> BuildLoginViewModelAsync(string returnUrl, AuthorizationRequest context)
         {
 
-            return new LoginViewModel
+          var allowLocal = true;
+          if (context?.Client.ClientId != null)
+          {
+            var client = await _clientStore.FindEnabledClientByIdAsync(context.Client.ClientId);
+            if (client != null)
+            {
+              allowLocal = client.EnableLocalLogin;
+            }
+          }
+
+          return new LoginViewModel
             {
                 ReturnUrl = returnUrl,
                 AccountName = context?.LoginHint,
