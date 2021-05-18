@@ -1,11 +1,19 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Identity.API.Infrastructure.Devspaces;
+using Identity.API.Infrastructure.GrantValidator;
+using Identity.API.Infrastructure.Services;
+using IdentityServer4.Services;
+using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.Validation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -26,7 +34,32 @@ namespace Identity.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllersWithViews();
+
+          var connectionString = Configuration.GetValue<string>("ConnectionString");
+          services.AddIdentityServer(x =>
+            {
+              x.IssuerUri = "null";
+              x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+
+            }).AddExtensionGrantValidator<ResourceOwnerSMSValidator>()
+            .AddDeveloperSigningCredential()
+            .AddDevspacesIfNeeded(Configuration.GetValue("EnableDevspaces", false))
+            .AddConfigurationStore(options =>
+            {
+              options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
+                new MySqlServerVersion(new Version(8, 0, 21)));
+            })
+            .AddOperationalStore(options =>
+            {
+              options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
+                new MySqlServerVersion(new Version(8, 0, 21)));
+            })
+            .Services.AddTransient<IProfileService, ProfileService>();
+
+          services.AddScoped<IAccountService, AccountService>();
+          services.AddScoped<IVerifyService, VerifyService>();
+          services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+          services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
