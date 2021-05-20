@@ -107,7 +107,6 @@ namespace Identity.API.Controllers
                     };
 
                     var identity = new ClaimsIdentity(claims, "Passport");
-
                     var principal = new ClaimsPrincipal(identity);
                     await HttpContext.SignInAsync(principal,props);
 

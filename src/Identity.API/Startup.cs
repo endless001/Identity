@@ -22,6 +22,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
+using HealthChecks.UI.Client;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace Identity.API
 {
@@ -38,42 +40,42 @@ namespace Identity.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-          var connectionString = Configuration.GetValue<string>("ConnectionString");
-          services.AddIdentityServer(x =>
+            var connectionString = Configuration.GetValue<string>("ConnectionString");
+            services.AddIdentityServer(x =>
+              {
+                  x.IssuerUri = "null";
+                  x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+
+              }).AddExtensionGrantValidator<ResourceOwnerSMSValidator>()
+              .AddDeveloperSigningCredential()
+              .AddDevspacesIfNeeded(Configuration.GetValue("EnableDevspaces", false))
+              .AddConfigurationStore(options =>
+              {
+                  options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
+                  new MySqlServerVersion(new Version(8, 0, 21)));
+              })
+              .AddOperationalStore(options =>
+              {
+                  options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
+                  new MySqlServerVersion(new Version(8, 0, 21)));
+              })
+              .Services.AddTransient<IProfileService, ProfileService>();
+
+            services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IVerifyService, VerifyService>();
+            services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
+
+
+            services.AddSingleton<ConnectionMultiplexer>(sp =>
             {
-              x.IssuerUri = "null";
-              x.Authentication.CookieLifetime = TimeSpan.FromHours(2);
+                var configuration = ConfigurationOptions.Parse(Configuration.GetValue<string>("RedisConfig:ConnectionString"), true);
+                configuration.ResolveDns = true;
+                return ConnectionMultiplexer.Connect(configuration);
+            });
 
-            }).AddExtensionGrantValidator<ResourceOwnerSMSValidator>()
-            .AddDeveloperSigningCredential()
-            .AddDevspacesIfNeeded(Configuration.GetValue("EnableDevspaces", false))
-            .AddConfigurationStore(options =>
-            {
-              options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
-                new MySqlServerVersion(new Version(8, 0, 21)));
-            })
-            .AddOperationalStore(options =>
-            {
-              options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
-                new MySqlServerVersion(new Version(8, 0, 21)));
-            })
-            .Services.AddTransient<IProfileService, ProfileService>();
-
-          services.AddScoped<IAccountService, AccountService>();
-          services.AddScoped<IVerifyService, VerifyService>();
-          services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
-
-
-          services.AddSingleton<ConnectionMultiplexer>(sp =>
-          {
-            var configuration = ConfigurationOptions.Parse(Configuration.GetValue<string>("RedisConfig:ConnectionString"), true);
-            configuration.ResolveDns = true;
-            return ConnectionMultiplexer.Connect(configuration);
-          });
-
-          services.AddControllersWithViews();
-          services.AddHealthChecks();
-          services.AddAutoMapper(c => c.AddProfile<MappingProfile>(), typeof(Startup));
+            services.AddControllersWithViews();
+            services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
+            services.AddAutoMapper(c => c.AddProfile<MappingProfile>(), typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -85,10 +87,17 @@ namespace Identity.API
 
             app.UseEndpoints(endpoints =>
             {
-              endpoints.MapHealthChecks("/health");
-              endpoints.MapHealthChecks("/liveness");
+                endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
+                {
+                    Predicate = _ => true,
+                    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+                endpoints.MapHealthChecks("/liveness", new HealthCheckOptions
+                {
+                    Predicate = r => r.Name.Contains("self")
+                });
 
-              endpoints.MapControllerRoute(
+                endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             });
