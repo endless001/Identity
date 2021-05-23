@@ -40,7 +40,8 @@ namespace Identity.API
         public void ConfigureServices(IServiceCollection services)
         {
 
-            var connectionString = Configuration.GetValue<string>("ConnectionString");
+          var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+          var connectionString = Configuration.GetValue<string>("ConnectionString");
             services.AddIdentityServer(x =>
               {
                   x.IssuerUri = "null";
@@ -52,12 +53,14 @@ namespace Identity.API
               .AddConfigurationStore(options =>
               {
                   options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
-                  new MySqlServerVersion(new Version(8, 0, 21)));
+                       new MySqlServerVersion(new Version(8, 0, 25)),
+                        sql => sql.MigrationsAssembly(migrationsAssembly));
               })
               .AddOperationalStore(options =>
               {
                   options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
-                  new MySqlServerVersion(new Version(8, 0, 21)));
+                  new MySqlServerVersion(new Version(8, 0, 25)),
+                  sql => sql.MigrationsAssembly(migrationsAssembly));
               })
               .Services.AddTransient<IProfileService, ProfileService>();
 
