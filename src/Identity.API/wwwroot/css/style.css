@@ -6,3 +6,8 @@
 .account-container {
     margin-top: 6rem !important;
 }
+
+.validation-summary-errors ul li{
+  list-style-type:none;
+  margin:0px;
+}

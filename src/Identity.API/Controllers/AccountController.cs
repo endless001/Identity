@@ -110,11 +110,7 @@ namespace Identity.API.Controllers
                     var principal = new ClaimsPrincipal(identity);
                     await HttpContext.SignInAsync(principal,props);
 
-                    if (_interaction.IsValidReturnUrl(model.ReturnUrl))
-                    {
-                        return Redirect(model.ReturnUrl);
-                    }
-                    return Redirect("~/");
+                    return Redirect(_interaction.IsValidReturnUrl(model.ReturnUrl) ? model.ReturnUrl : "~/");
                 }
 
                 ModelState.AddModelError(string.Empty, "Invalid username or password.");
