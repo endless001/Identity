@@ -24,6 +24,7 @@ using Microsoft.OpenApi.Models;
 using StackExchange.Redis;
 using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Identity.API.Configuration;
 
 namespace Identity.API
 {
@@ -76,9 +77,10 @@ namespace Identity.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
+            services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
             services.AddControllersWithViews();
             services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
-            services.AddAutoMapper(c => c.AddProfile<MappingProfile>(), typeof(Startup));
+            services.AddAutoMapper(typeof(MappingProfile).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,7 +8,7 @@ namespace Identity.API.Infrastructure.Mapping
   {
     public MappingProfile()
     {
-      CreateMap<AccountModel, AccountRequest>();
+            CreateMap<AccountModel, AccountRequest>().ReverseMap();
     }
   }
 }
