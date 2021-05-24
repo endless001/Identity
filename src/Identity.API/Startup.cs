@@ -99,7 +99,7 @@ namespace Identity.API
                 {
                     Predicate = r => r.Name.Contains("self")
                 });
-
+                    
                 endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
