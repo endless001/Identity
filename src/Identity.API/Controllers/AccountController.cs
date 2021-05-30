@@ -129,7 +129,7 @@ namespace Identity.API.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
         {
-            if (User.Identity.IsAuthenticated == false)
+            if (User.Identity?.IsAuthenticated == false)
             {
                 // if the user is not authenticated, then just show logged out page
                 return await Logout(new LoginViewModel { LogoutId = logoutId });
