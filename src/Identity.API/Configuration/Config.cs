@@ -55,8 +55,8 @@ namespace Identity.API.Configuration
         },
         new Client
         {
-          ClientId = "mvc",
-          ClientName = "MVC Client",
+          ClientId = "chat",
+          ClientName = "chat Client",
           ClientSecrets = new List<Secret>
           {
             new Secret("secret".Sha256())
@@ -85,6 +85,7 @@ namespace Identity.API.Configuration
             "download",
             "upload",
           },
+          AllowedCorsOrigins = new List<string> {"http://localhost:3000"},
           AccessTokenLifetime = 60 * 60 * 2, // 2 hours
           IdentityTokenLifetime = 60 * 60 * 2 // 2 hours
         }
