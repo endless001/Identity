@@ -89,7 +89,7 @@ namespace Identity.API
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
-
+            app.UseIdentityServer();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()

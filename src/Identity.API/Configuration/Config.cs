@@ -56,24 +56,24 @@ namespace Identity.API.Configuration
         new Client
         {
           ClientId = "chat",
-          ClientName = "chat Client",
+          ClientName = "Chat Client",
           ClientSecrets = new List<Secret>
           {
             new Secret("secret".Sha256())
           },
-          ClientUri = $"{clientsUrl["Mvc"]}",
+          ClientUri = $"{clientsUrl["Chat"]}",
           AllowedGrantTypes = GrantTypes.Implicit,
-          AllowAccessTokensViaBrowser = false,
+          AllowAccessTokensViaBrowser = true,
           RequireConsent = true,
           AllowOfflineAccess = true,
           AlwaysIncludeUserClaimsInIdToken = true,
           RedirectUris = new List<string>
           {
-            $"{clientsUrl["Mvc"]}/signin-oidc"
+            $"{clientsUrl["Chat"]}/signin-oidc"
           },
           PostLogoutRedirectUris = new List<string>
           {
-            $"{clientsUrl["Mvc"]}/signout-callback-oidc"
+            $"{clientsUrl["Chat"]}/signout-callback-oidc"
           },
           AllowedScopes = new List<string>
           {

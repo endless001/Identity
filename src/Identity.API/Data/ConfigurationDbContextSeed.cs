@@ -16,15 +16,7 @@ namespace Identity.API.Data
         {
             var clientUrls = new Dictionary<string, string>();
 
-            clientUrls.Add("Mvc", configuration.GetValue<string>("MvcClient"));
-            clientUrls.Add("Spa", configuration.GetValue<string>("SpaClient"));
-            clientUrls.Add("Xamarin", configuration.GetValue<string>("XamarinCallback"));
-            clientUrls.Add("BasketApi", configuration.GetValue<string>("BasketApiClient"));
-            clientUrls.Add("OrderingApi", configuration.GetValue<string>("OrderingApiClient"));
-            clientUrls.Add("MobileShoppingAgg", configuration.GetValue<string>("MobileShoppingAggClient"));
-            clientUrls.Add("WebShoppingAgg", configuration.GetValue<string>("WebShoppingAggClient"));
-            clientUrls.Add("WebhooksApi", configuration.GetValue<string>("WebhooksApiClient"));
-            clientUrls.Add("WebhooksWeb", configuration.GetValue<string>("WebhooksWebClient"));
+            clientUrls.Add("Chat", configuration.GetValue<string>("ChatClient"));
 
             if (!context.Clients.Any())
             {

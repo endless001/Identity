@@ -11,7 +11,7 @@ namespace Microsoft.AspNetCore.Mvc.Rendering
             if (htmlHelper == null) throw new ArgumentNullException(nameof(htmlHelper));
 
             IHtmlContent validationSummary = null;
-            if (htmlHelper.ViewData.ModelState.Count == 0) return validationSummary;
+            if (htmlHelper.ViewData.ModelState.IsValid) return validationSummary;
             var htmlAttributes = new { @class = "alert alert-danger" };
             validationSummary = htmlHelper.ValidationSummary(excludePropertyErrors, message, htmlAttributes);
 
