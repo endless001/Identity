@@ -4,32 +4,32 @@ using IdentityServer4.Models;
 
 namespace Identity.API.Configuration
 {
-  public class Config
-  {
-    public static IEnumerable<ApiResource> GetApis()
+    public class Config
     {
-      return new List<ApiResource>
+        public static IEnumerable<ApiResource> GetApis()
+        {
+            return new List<ApiResource>
       {
         new ApiResource("account", "Account Service"),
         new ApiResource("contact", "Contact Service"),
         new ApiResource("download", "Download Service"),
         new ApiResource("upload", "Upload Service"),
       };
-    }
+        }
 
-    public static IEnumerable<IdentityResource> GetResources()
-    {
-      return new List<IdentityResource>
-      {
+        public static IEnumerable<IdentityResource> GetResources()
+        {
+            return new List<IdentityResource>
+            { 
         new IdentityResources.OpenId(),
         new IdentityResources.Profile(),
 
-      };
-    }
+            };
+        }
 
-    public static IEnumerable<Client> GetClients(Dictionary<string, string> clientsUrl)
-    {
-      return new List<Client>
+        public static IEnumerable<Client> GetClients(Dictionary<string, string> clientsUrl)
+        {
+            return new List<Client>
       {
         new Client()
         {
@@ -69,11 +69,11 @@ namespace Identity.API.Configuration
           AlwaysIncludeUserClaimsInIdToken = true,
           RedirectUris = new List<string>
           {
-            $"{clientsUrl["Chat"]}/signin-oidc"
+            "http://localhost:3000/user/callback"
           },
           PostLogoutRedirectUris = new List<string>
           {
-            $"{clientsUrl["Chat"]}/signout-callback-oidc"
+            "http://localhost:3000/index.html"
           },
           AllowedScopes = new List<string>
           {
@@ -89,7 +89,7 @@ namespace Identity.API.Configuration
           AccessTokenLifetime = 60 * 60 * 2, // 2 hours
           IdentityTokenLifetime = 60 * 60 * 2 // 2 hours
         }
-      };
+            };
+        }
     }
-  }
 }

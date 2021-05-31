@@ -25,6 +25,7 @@ using StackExchange.Redis;
 using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Identity.API.Configuration;
+using Microsoft.AspNetCore.Http;
 
 namespace Identity.API
 {
@@ -70,14 +71,19 @@ namespace Identity.API
             services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
 
 
-            services.AddSingleton<ConnectionMultiplexer>(sp =>
+            services.AddSingleton(sp =>
             {
                 var configuration = ConfigurationOptions.Parse(Configuration.GetValue<string>("RedisConfig:ConnectionString"), true);
                 configuration.ResolveDns = true;
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
-            services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+            });
+
+          services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
             services.AddControllersWithViews();
             services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
@@ -87,9 +93,11 @@ namespace Identity.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseStaticFiles();
+
             app.UseRouting();
-            app.UseAuthorization();
+
             app.UseIdentityServer();
+            app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()

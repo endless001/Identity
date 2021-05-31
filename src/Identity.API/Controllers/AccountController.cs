@@ -1,4 +1,5 @@
 ﻿using Identity.API.Infrastructure.Services;
+using Identity.API.Models;
 using Identity.API.Models.ViewModels;
 using IdentityModel;
 using IdentityServer4;
@@ -75,7 +76,11 @@ namespace Identity.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                var account = await _accountService.PasswordSignInAsync(model.AccountName, model.Password);
+                // var account = await _accountService.PasswordSignInAsync(model.AccountName, model.Password);
+                var account = new AccountModel
+                {
+                    AccountId = 1
+                };
                 if (account != null)
                 {
 
@@ -99,7 +104,7 @@ namespace Identity.API.Controllers
 
                     var claims = new List<Claim>
                     {
-                      new Claim("accountId",account.AccountId.ToString()),
+                      new Claim("sub",account.AccountId.ToString()),
                       new Claim("accountName",account.AccountName??string.Empty),
                       new Claim("avatar",account.Avatar??string.Empty),
                       new Claim("phone",account.Phone??string.Empty),
