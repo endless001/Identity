@@ -26,6 +26,8 @@ using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Identity.API.Configuration;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using IdentityServer4;
 
 namespace Identity.API
 {
@@ -78,12 +80,16 @@ namespace Identity.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
-            services.Configure<CookiePolicyOptions>(options =>
+          
+
+            services.Configure<CookieAuthenticationOptions>(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
             {
-                options.MinimumSameSitePolicy = SameSiteMode.Lax;
+                options.Cookie.SameSite = SameSiteMode.None;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+                options.Cookie.IsEssential = true;
             });
 
-          services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
+            services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
             services.AddControllersWithViews();
             services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
             services.AddAutoMapper(typeof(MappingProfile).Assembly);
@@ -96,6 +102,7 @@ namespace Identity.API
 
             app.UseRouting();
 
+ 
             app.UseIdentityServer();
             app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
