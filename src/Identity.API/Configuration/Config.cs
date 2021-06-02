@@ -20,7 +20,7 @@ namespace Identity.API.Configuration
         public static IEnumerable<IdentityResource> GetResources()
         {
             return new List<IdentityResource>
-            { 
+            {
         new IdentityResources.OpenId(),
         new IdentityResources.Profile(),
 
@@ -69,11 +69,11 @@ namespace Identity.API.Configuration
           AlwaysIncludeUserClaimsInIdToken = true,
           RedirectUris = new List<string>
           {
-            "http://localhost:3000/user/callback"
+            "http://127.0.0.1:3000/user/callback"
           },
           PostLogoutRedirectUris = new List<string>
           {
-            "http://localhost:3000/index.html"
+            "http://127.0.0.1:3000/index.html"
           },
           AllowedScopes = new List<string>
           {
@@ -85,7 +85,7 @@ namespace Identity.API.Configuration
             "download",
             "upload",
           },
-          AllowedCorsOrigins = new List<string> {"http://localhost:3000"},
+          AllowedCorsOrigins = new List<string> {"http://127.0.0.1:3000"},
           AccessTokenLifetime = 60 * 60 * 2, // 2 hours
           IdentityTokenLifetime = 60 * 60 * 2 // 2 hours
         }
