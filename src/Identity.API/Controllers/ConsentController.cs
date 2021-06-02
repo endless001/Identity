@@ -96,7 +96,14 @@ namespace Identity.API.Controllers
         async Task<ConsentViewModel> BuildViewModelAsync(string returnUrl, ConsentInputModel model = null)
         {
             var request = await _interaction.GetAuthorizationContextAsync(returnUrl);
-           
+            if (request != null)
+            {
+                return new ConsentViewModel(model, returnUrl, request);
+            }
+            else
+            {
+                _logger.LogError("No consent request matching request: {0}", returnUrl);
+            }
 
             return null;
         }
