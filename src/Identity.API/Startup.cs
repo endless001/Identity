@@ -80,13 +80,9 @@ namespace Identity.API
                 return ConnectionMultiplexer.Connect(configuration);
             });
 
-          
-
-            services.Configure<CookieAuthenticationOptions>(IdentityServerConstants.DefaultCookieAuthenticationScheme, options =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
-                options.Cookie.SameSite = SameSiteMode.None;
-                options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-                options.Cookie.IsEssential = true;
+                options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
 
             services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
@@ -102,7 +98,6 @@ namespace Identity.API
 
             app.UseRouting();
 
- 
             app.UseIdentityServer();
             app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>

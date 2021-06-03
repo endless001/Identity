@@ -69,7 +69,7 @@ namespace Identity.API.Configuration
           AlwaysIncludeUserClaimsInIdToken = true,
           RedirectUris = new List<string>
           {
-            "http://127.0.0.1:3000/user/callback"
+            "http://127.0.0.1:3000/callback"
           },
           PostLogoutRedirectUris = new List<string>
           {
