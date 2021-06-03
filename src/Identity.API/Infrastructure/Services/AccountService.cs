@@ -5,6 +5,7 @@ using AutoMapper;
 using Identity.API.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Identity.API.Infrastructure.Services
 {
@@ -25,16 +26,16 @@ namespace Identity.API.Infrastructure.Services
 
     public async Task<AccountModel> PasswordSignInAsync(string accountName, string password)
     {
-      var account = new AccountModel()
+      var request = new AccountRequest()
       {
         AccountName = accountName,
         Password = password
       };
       var response = await GrpcCallerService.CallService(_urls.GrpcAccount, async channel =>
       {
-        var client = new AccountGrpc.AccountGrpcClient(channel);
-        var request = _mapper.Map<AccountRequest>(account);
-        return await client.PasswordSignInAsync(request);
+        var client = new AccountGrpc.AccountGrpcClient(channel);;
+         return await client.PasswordSignInAsync(request);
+        
       });
       return _mapper.Map<AccountModel>(response);
     }

@@ -76,14 +76,9 @@ namespace Identity.API.Controllers
         {
             if (ModelState.IsValid)
             {
-                // var account = await _accountService.PasswordSignInAsync(model.AccountName, model.Password);
-                var account = new AccountModel
-                {
-                    AccountId = 1
-                };
+                var account = await _accountService.PasswordSignInAsync(model.AccountName, model.Password);
                 if (account != null)
                 {
-
                     var tokenLifetime = _configuration.GetValue("TokenLifetimeMinutes", 120);
                     var props = new AuthenticationProperties
                     {
