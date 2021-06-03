@@ -26,8 +26,7 @@ using HealthChecks.UI.Client;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Identity.API.Configuration;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using IdentityServer4;
+using Identity.API.Infrastructure.Extensions;
 
 namespace Identity.API
 {
@@ -84,7 +83,7 @@ namespace Identity.API
             {
                 options.MinimumSameSitePolicy = SameSiteMode.Lax;
             });
-
+            services.AddGrpcServices();
             services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
             services.AddControllersWithViews();
             services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
@@ -117,5 +116,7 @@ namespace Identity.API
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
+
+      
     }
 }

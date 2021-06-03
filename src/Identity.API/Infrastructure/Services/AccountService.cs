@@ -6,38 +6,35 @@ using Identity.API.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
+using static Account.API.Grpc.AccountGrpc;
 
 namespace Identity.API.Infrastructure.Services
 {
-  public class AccountService : IAccountService
-  {
-    private readonly ILogger<AccountService> _logger;
-    private readonly UrlsConfig _urls;
-    private readonly IMapper _mapper;
-
-    public AccountService(ILogger<AccountService> logger,
-      IOptions<UrlsConfig> urls,
-      IMapper mapper)
+    public class AccountService : IAccountService
     {
-      _logger = logger;
-      _urls = urls.Value;
-      _mapper = mapper;
-    }
+        private readonly ILogger<AccountService> _logger;
+        private readonly AccountGrpcClient _accountGrpcClient;
+        private readonly IMapper _mapper;
 
-    public async Task<AccountModel> PasswordSignInAsync(string accountName, string password)
-    {
-      var request = new AccountRequest()
-      {
-        AccountName = accountName,
-        Password = password
-      };
-      var response = await GrpcCallerService.CallService(_urls.GrpcAccount, async channel =>
-      {
-        var client = new AccountGrpc.AccountGrpcClient(channel);;
-         return await client.PasswordSignInAsync(request);
-        
-      });
-      return _mapper.Map<AccountModel>(response);
+        public AccountService(ILogger<AccountService> logger,
+             AccountGrpcClient accountGrpcClient,
+          IMapper mapper)
+        {
+            _logger = logger;
+            _accountGrpcClient = accountGrpcClient;
+            _mapper = mapper;
+        }
+
+        public async Task<AccountModel> PasswordSignInAsync(string accountName, string password)
+        {
+            var request = new AccountRequest()
+            {
+                AccountName = accountName,
+                Password = password
+            };
+            var response = await _accountGrpcClient.PasswordSignInAsync(request);
+           
+            return _mapper.Map<AccountModel>(response);
+         }
     }
-  }
 }
