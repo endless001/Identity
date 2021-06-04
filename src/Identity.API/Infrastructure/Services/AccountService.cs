@@ -33,8 +33,17 @@ namespace Identity.API.Infrastructure.Services
                 Password = password
             };
             var response = await _accountGrpcClient.PasswordSignInAsync(request);
-           
-            return _mapper.Map<AccountModel>(response);
+
+            return new AccountModel()
+            {
+                AccountId = response.AccountId,
+                AccountName = response.AccountName,
+                Avatar = response.Avatar,
+                Email = response.Email,
+                Phone = response.Phone,
+                Sex = response.Sex,
+                Tel = response.Tel
+            };
          }
     }
 }
