@@ -11,9 +11,7 @@
             <div class="card">
                 <div class="card-body p-4">
                     <div class="p-3">
-                        <div class="alert alert-success text-center mb-4" role="alert">
-                            Enter your Email and instructions will be sent to you!
-                        </div>
+                          @Html.CleanValidationSummary(false)
                             <div class="form-group">
                                 <label>Email</label>
                                 <div class="input-group mb-3 bg-soft-light input-group-lg rounded-lg">
@@ -23,17 +21,6 @@
                                         </span>
                                     </div>
                                     <input type="email" class="form-control bg-soft-light border-light" placeholder="Enter Email">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Username</label>
-                                <div class="input-group mb-3 bg-soft-light input-group-lg rounded-lg">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text border-light text-muted">
-                                            <i class="ri-user-2-line"></i>
-                                        </span>
-                                    </div>
-                                    <input type="text" class="form-control bg-soft-light border-light" placeholder="Enter Username">
                                 </div>
                             </div>
                             <div class="form-group mb-4">
@@ -59,10 +46,10 @@
                                     <div class="input-group-prepend">
                                         <input type="text" class="form-control bg-soft-light border-light" placeholder="Verify Code">
                                     </div>
-                                    <div class="input-group-prepend">
+                                    <div class="input-group-prepend" style="flex: 1;text-align: right;">
                                         <button class="btn btn-primary btn-block waves-effect waves-light" id="verify"  data-loading-text="Loading..." >Send</button>
                                     </div>
-                                </div>                        
+                                </div>
                             </div>
                             <div>
                                 <button class="btn btn-primary btn-block waves-effect waves-light" type="submit">Sign up</button>
@@ -70,7 +57,7 @@
                             <div class="mt-4 text-center">
                                 <p class="text-muted mb-0">By registering you agree to the Chatvia <a href="#" class="text-primary">Terms of Use</a></p>
                             </div>
-                  
+
                     </div>
                 </div>
             </div>
@@ -83,7 +70,7 @@
 (function () {
 'use strict'
     const disable = (time, $dom) => {
-        if (time == 0) {
+        if (time === 0) {
             clearInterval(timer);
             $dom.attr('disabled', false);
             $dom.html("send");
@@ -94,7 +81,7 @@
             $dom.html(`${time} second`);
             time--;
         }
-        var timer = setTimeout(() => {
+        let timer = setTimeout(() => {
             disable(time, $dom)
         }, 1000);
     }
@@ -102,15 +89,13 @@
     $("#verify").click(function (e) {
         e.preventDefault();
 
-        var $this = $(this);
+        let $this = $(this);
         $this.button('loading');
         $.post("", {}, function (resp) {
             $this.button('reset');
             disable(60, $this);
         });
-      
     });
-
 })()
 </script>
 }
