@@ -59,7 +59,7 @@ namespace Identity.API.Controllers
 
           var vm = await BuildLoginViewModelAsync(returnUrl, context);
           ViewData["ReturnUrl"] = returnUrl;
-          return View();
+          return View(vm);
         }
 
         [HttpGet]

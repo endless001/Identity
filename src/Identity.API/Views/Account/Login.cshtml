@@ -16,8 +16,8 @@
             <div class="p-3">
 
             @Html.CleanValidationSummary(false)
-              <form id="loginForm" asp-controller="Account" asp-action="Login"  method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
-                  <div class="form-group">
+                <form id="loginForm" asp-controller="Account" asp-action="Login" method="post" asp-route-returnUrl="@ViewData["ReturnUrl"]">
+                    <div class="form-group">
                         <label>Username</label>
                         <div class="input-group mb-3 bg-soft-light input-group-lg rounded-lg">
                             <div class="input-group-prepend">
@@ -30,7 +30,7 @@
                     </div>
 
                     <div class="form-group mb-4">
-                   
+
                         <label>Password</label>
                         <div class="input-group mb-3 bg-soft-light input-group-lg rounded-lg">
                             <div class="input-group-prepend">
@@ -48,18 +48,21 @@
                         <label class="custom-control-label" for="remember-check">Remember me</label>
                         <div class="float-right">
                             <div>
-                                <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" class="text-muted font-size-13">Register as a new user?</a>
-                            </div>
-                            <div>
                                 <a asp-action="ResetPassword" class="text-muted font-size-13">Forgot password</a>
                             </div>
                         </div>
-                   
+
                     </div>
                     <div>
                         <button class="btn btn-primary btn-block waves-effect waves-light" type="submit">Sign in</button>
                     </div>
-              </form>
+                    <div class="mt-4 text-center">
+                        <p class="text-muted mb-0">
+                            <a asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" class="text-muted font-size-13">Register as a new user?</a>
+                        </p>
+                    </div>
+                 
+                </form>
             </div>
         </div>
       </div>

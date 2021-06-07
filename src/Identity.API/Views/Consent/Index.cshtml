@@ -8,16 +8,12 @@
                 <h4>Sign in</h4>
                 <p class="text-muted mb-4">Sign in to continue to Chatvia.</p>
             </div>
-
             <div class="card">
                 <div class="card-body p-4">
                     <div class="p-3">
-
                         <form asp-controller="Consent" asp-action="Index" method="post" asp-route-returnUrl="@ViewData["returnUrl"]">
-
                             <input type="hidden" asp-for="ReturnUrl" />
                             <div>Uncheck the permissions you do not wish to grant.</div>
-
                             @if (Model.IdentityScopes.Any())
                             {
                                 <div class="panel panel-default consent-buttons">
@@ -33,7 +29,6 @@
                                     </ul>
                                 </div>
                             }
-
                             @if (Model.ApiScopes.Any())
                             {
                                 <div class="panel panel-default">
@@ -49,7 +44,6 @@
                                     </ul>
                                 </div>
                             }
-
                             @if (Model.AllowRememberConsent)
                             {
                         <div class="consent-remember">
@@ -57,10 +51,8 @@
                                 <input class="consent-scopecheck" asp-for="RememberConsent" />
                                 <strong>Remember My Decision</strong>
                             </label>
-                           
                         </div>
                             }
-
                         <div class="consent-buttons">
                             <button name="button" value="yes" class="btn btn-primary" autofocus>Yes, Allow</button>
                             <button name="button" value="no" class="btn">No, Do Not Allow</button>
@@ -72,7 +64,6 @@
                                 </a>
                             }   
                         </div>
-
                         </form>
                     </div>
                 </div>
