@@ -75,7 +75,7 @@ namespace Identity.API
 
             services.AddSingleton(sp =>
             {
-                var configuration = ConfigurationOptions.Parse(Configuration.GetValue<string>("RedisConfig:ConnectionString"), true);
+                var configuration = ConfigurationOptions.Parse(Configuration.GetValue<string>("Redis:ConnectionString"), true);
                 configuration.ResolveDns = true;
                 return ConnectionMultiplexer.Connect(configuration);
             });

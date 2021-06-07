@@ -13,8 +13,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -22,28 +24,37 @@ namespace Identity.API.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly IVerifyService _verifyService;
         private readonly IAccountService _accountService;
         private readonly IMessageService _messageService;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IConfiguration _configuration;
         private readonly IEventService _events;
         private readonly IClientStore _clientStore;
+        private readonly ConnectionMultiplexer _redis;
+        private readonly IDatabase _database;
         private readonly ILogger<AccountController> _logger;
 
-        public AccountController(IAccountService accountService,
+        public AccountController(
+            IVerifyService verifyService,
+            IAccountService accountService,
             IMessageService messageService,
             IIdentityServerInteractionService interaction,
             IConfiguration configuration,
             IEventService events,
             IClientStore clientStore,
+            ConnectionMultiplexer redis,
             ILogger<AccountController> logger)
         {
+            _verifyService = verifyService;
             _accountService = accountService;
             _messageService = messageService;
             _interaction = interaction;
             _configuration = configuration;
             _events = events;
             _clientStore = clientStore;
+            _redis = redis;
+            _database = redis.GetDatabase();
             _logger = logger;
         }
 
@@ -134,7 +145,7 @@ namespace Identity.API.Controllers
             Random rd = new Random();
             var verifyCode = rd.Next(100000, 1000000);
             var content = $"Your verify code is:{verifyCode}";
-
+            await _database.StringSetAsync($"Email{email}", verifyCode, TimeSpan.FromMinutes(30));
             await _messageService.SendMail(email, content);
             return Ok();
         }
@@ -220,11 +231,18 @@ namespace Identity.API.Controllers
 
             if (ModelState.IsValid)
             {
+                var verify = await _verifyService.EmailVerifyAsync(model.Email, model.VerifyCode);
+                if (!verify)
+                {
+                    ModelState.AddModelError(string.Empty, "Verification code error.");
+                    return View(model);
+                }
+
                 var result = await _accountService.RegisterEmailAsync(model.Email, model.Password);
                 if (result == null)
                 {
                     ModelState.AddModelError(string.Empty, "Registration Failed.");
-                    return View();
+                    return View(model);
                 }
             }
 
@@ -271,6 +289,11 @@ namespace Identity.API.Controllers
             vm.AccountName = model.AccountName;
             vm.RememberMe = model.RememberMe;
             return vm;
+        }
+        private IServer GetServer()
+        {
+            var endpoint = _redis.GetEndPoints();
+            return _redis.GetServer(endpoint.First());
         }
     }
 }
