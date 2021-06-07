@@ -8,6 +8,7 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -22,6 +23,7 @@ namespace Identity.API.Controllers
     public class AccountController : Controller
     {
         private readonly IAccountService _accountService;
+        private readonly IMessageService _messageService;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IConfiguration _configuration;
         private readonly IEventService _events;
@@ -29,18 +31,20 @@ namespace Identity.API.Controllers
         private readonly ILogger<AccountController> _logger;
 
         public AccountController(IAccountService accountService,
-          IIdentityServerInteractionService interaction,
-          IConfiguration configuration,
-          IEventService events,
-          IClientStore clientStore,
-          ILogger<AccountController> logger)
+            IMessageService messageService,
+            IIdentityServerInteractionService interaction,
+            IConfiguration configuration,
+            IEventService events,
+            IClientStore clientStore,
+            ILogger<AccountController> logger)
         {
-          _accountService = accountService;
-          _interaction = interaction;
-          _configuration = configuration;
-          _events = events;
-          _clientStore = clientStore;
-          _logger = logger;
+            _accountService = accountService;
+            _messageService = messageService;
+            _interaction = interaction;
+            _configuration = configuration;
+            _events = events;
+            _clientStore = clientStore;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -59,8 +63,9 @@ namespace Identity.API.Controllers
         }
 
         [HttpGet]
-        public IActionResult Register()
+        public IActionResult Register(string returnUrl)
         {
+            ViewData["ReturnUrl"] = returnUrl;
             return View();
         }
 
@@ -124,7 +129,15 @@ namespace Identity.API.Controllers
             return View(vm);
         }
 
+        public async Task<IActionResult> SendVerifyCode(string email)
+        {
+            Random rd = new Random();
+            var verifyCode = rd.Next(100000, 1000000);
+            var content = $"Your verify code is:{verifyCode}";
 
+            await _messageService.SendMail(email, content);
+            return Ok();
+        }
 
         [HttpGet]
         public async Task<IActionResult> Logout(string logoutId)
@@ -195,6 +208,38 @@ namespace Identity.API.Controllers
             var logout = await _interaction.GetLogoutContextAsync(model.LogoutId);
 
             return Redirect(logout?.PostLogoutRedirectUri);
+        }
+
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterViewModel model, string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.RegisterEmailAsync(model.Email, model.Password);
+                if (result == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Registration Failed.");
+                    return View();
+                }
+            }
+
+            if (returnUrl != null)
+            {
+                if (HttpContext.User.Identity.IsAuthenticated)
+                    return Redirect(returnUrl);
+                else
+                    if (ModelState.IsValid)
+                    return RedirectToAction("login", "account", new { returnUrl = returnUrl });
+                else
+                    return View(model);
+            }
+
+            return View();
         }
 
 

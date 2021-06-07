@@ -33,17 +33,47 @@ namespace Identity.API.Infrastructure.Services
                 Password = password
             };
             var response = await _accountGrpcClient.PasswordSignInAsync(request);
+            return MapResponse(response);
+         }
 
+        public async Task<AccountModel> RegisterEmailAsync(string email, string password)
+        {
+            var request = new AccountRequest()
+            {
+                Email = email,
+                Password = password
+            };
+            var response = await _accountGrpcClient.RegisterEmailAsync(request);
+            return MapResponse(response);
+        }
+
+        private AccountModel MapResponse(AccountResponse account)
+        {
             return new AccountModel()
             {
-                AccountId = response.AccountId,
-                AccountName = response.AccountName,
-                Avatar = response.Avatar,
-                Email = response.Email,
-                Phone = response.Phone,
-                Sex = response.Sex,
-                Tel = response.Tel
+                AccountId = account.AccountId,
+                Avatar = account.Avatar ?? string.Empty,
+                AccountName = account.AccountName ?? string.Empty,
+                Email = account.Email ?? string.Empty,
+                Phone = account.Phone ?? string.Empty,
+                Sex = account.Sex,
+                Tel = account.Tel ?? string.Empty
             };
-         }
+        }
+
+        private AccountRequest MapRequest(AccountModel account)
+        {
+            return new AccountRequest()
+            {
+                AccountId = account.AccountId,
+                Password = account.Password,
+                Avatar = account.Avatar ?? string.Empty,
+                AccountName = account.AccountName ?? string.Empty,
+                Email = account.Email ?? string.Empty,
+                Phone = account.Phone ?? string.Empty,
+                Sex = account.Sex,
+                Tel = account.Tel ?? string.Empty
+            };
+        }
     }
 }

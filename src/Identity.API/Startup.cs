@@ -69,6 +69,7 @@ namespace Identity.API
 
             services.AddScoped<IAccountService, AccountService>();
             services.AddScoped<IVerifyService, VerifyService>();
+            services.AddScoped<IMessageService, MessageService>();
             services.AddTransient<IResourceOwnerPasswordValidator, ResourceOwnerPasswordValidator>();
 
 
@@ -94,9 +95,7 @@ namespace Identity.API
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseStaticFiles();
-
             app.UseRouting();
-
             app.UseIdentityServer();
             app.UseCookiePolicy();
             app.UseEndpoints(endpoints =>
@@ -116,7 +115,5 @@ namespace Identity.API
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             });
         }
-
-      
     }
 }

@@ -13,9 +13,5 @@ namespace Identity.API.Models.ViewModels
         public string ReturnUrl { get; set; }
         public string Description { get; set; }
 
-
-
-     
-
     }
 }

@@ -11,7 +11,8 @@
             <div class="card">
                 <div class="card-body p-4">
                     <div class="p-3">
-                          @Html.CleanValidationSummary(false)
+                        @Html.CleanValidationSummary(false)
+                        <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
                             <div class="form-group">
                                 <label>Email</label>
                                 <div class="input-group mb-3 bg-soft-light input-group-lg rounded-lg">
@@ -20,7 +21,7 @@
                                             <i class="ri-mail-line"></i>
                                         </span>
                                     </div>
-                                    <input type="email" class="form-control bg-soft-light border-light" placeholder="Enter Email">
+                                    <input type="email" id="email" name="email" class="form-control bg-soft-light border-light" placeholder="Enter Email">
                                 </div>
                             </div>
                             <div class="form-group mb-4">
@@ -31,7 +32,7 @@
                                             <i class="ri-lock-2-line"></i>
                                         </span>
                                     </div>
-                                    <input type="password" class="form-control bg-soft-light border-light" placeholder="Enter Password">
+                                    <input type="password" name="password" class="form-control bg-soft-light border-light" placeholder="Enter Password">
 
                                 </div>
                             </div>
@@ -44,10 +45,10 @@
                                         </span>
                                     </div>
                                     <div class="input-group-prepend">
-                                        <input type="text" class="form-control bg-soft-light border-light" placeholder="Verify Code">
+                                        <input type="text"  name="verifyCode" class="form-control bg-soft-light border-light" placeholder="Verify Code">
                                     </div>
                                     <div class="input-group-prepend" style="flex: 1;text-align: right;">
-                                        <button class="btn btn-primary btn-block waves-effect waves-light" id="verify"  data-loading-text="Loading..." >Send</button>
+                                        <button type="button" class="btn btn-primary btn-block waves-effect waves-light" id="verify">Send</button>
                                     </div>
                                 </div>
                             </div>
@@ -57,7 +58,7 @@
                             <div class="mt-4 text-center">
                                 <p class="text-muted mb-0">By registering you agree to the Chatvia <a href="#" class="text-primary">Terms of Use</a></p>
                             </div>
-
+                            </form>
                     </div>
                 </div>
             </div>
@@ -68,34 +69,20 @@
 @section Scripts {
 <script>
 (function () {
-'use strict'
-    const disable = (time, $dom) => {
-        if (time === 0) {
-            clearInterval(timer);
-            $dom.attr('disabled', false);
-            $dom.html("send");
-            time = 60;
-            return;
-        } else {
-            $dom.attr('disabled', true);
-            $dom.html(`${time} second`);
-            time--;
-        }
-        let timer = setTimeout(() => {
-            disable(time, $dom)
-        }, 1000);
-    }
+    'use strict'
 
     $("#verify").click(function (e) {
         e.preventDefault();
-
-        let $this = $(this);
-        $this.button('loading');
-        $.post("", {}, function (resp) {
-            $this.button('reset');
-            disable(60, $this);
+        var $this = $(this);
+        $this.loading();
+        var eamil = $("#email").val();
+        $.post("/account/sendverifycode", { "email": eamil }, function (resp) {
+            $this.disable(60);
+        }).fail(function (xhr, status, error) {
+            $this.reset();
         });
     });
+
 })()
 </script>
 }
