@@ -290,10 +290,6 @@ namespace Identity.API.Controllers
             vm.RememberMe = model.RememberMe;
             return vm;
         }
-        private IServer GetServer()
-        {
-            var endpoint = _redis.GetEndPoints();
-            return _redis.GetServer(endpoint.First());
-        }
+      
     }
 }
