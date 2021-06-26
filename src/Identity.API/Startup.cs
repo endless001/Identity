@@ -97,13 +97,6 @@ namespace Identity.API
             app.UseStaticFiles();
             app.UseRouting();
 
-            app.Use(async (context, next) =>
-            {
-              context.Response.Headers.Add("Content-Security-Policy", "script-src 'unsafe-inline'");
-              await next();
-            });
-
-            app.UseForwardedHeaders();
             app.UseIdentityServer();
             app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
             app.UseEndpoints(endpoints =>
