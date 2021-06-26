@@ -17,7 +17,8 @@ namespace Identity.API.Models.ViewModels
         public IEnumerable<ScopeViewModel> ApiScopes { get; set; }
 
         public ConsentViewModel(
-          ConsentInputModel model, string returnUrl,
+          ConsentInputModel model,
+          string returnUrl,
           AuthorizationRequest request)
         {
 
