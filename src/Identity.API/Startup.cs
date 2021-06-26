@@ -96,8 +96,16 @@ namespace Identity.API
         {
             app.UseStaticFiles();
             app.UseRouting();
+
+            app.Use(async (context, next) =>
+            {
+              context.Response.Headers.Add("Content-Security-Policy", "script-src 'unsafe-inline'");
+              await next();
+            });
+
+            app.UseForwardedHeaders();
             app.UseIdentityServer();
-            app.UseCookiePolicy();
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Lax });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapHealthChecks("/hc", new HealthCheckOptions()
@@ -109,7 +117,7 @@ namespace Identity.API
                 {
                     Predicate = r => r.Name.Contains("self")
                 });
-                    
+
                 endpoints.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
