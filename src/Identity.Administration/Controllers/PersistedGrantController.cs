@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Identity.Administration.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class PersistedGrantController : ControllerBase
     {
         private readonly IPersistedGrantStore _persistedGrantStore;
@@ -15,9 +17,6 @@ namespace Identity.Administration.Controllers
         {
             _persistedGrantStore = persistedGrantStore;
         }
-
-
-
 
     }
 }

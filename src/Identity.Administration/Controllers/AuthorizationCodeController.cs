@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Identity.Administration.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class AuthorizationCodeController : ControllerBase
     {
         private readonly IAuthorizationCodeStore _authorizationCodeStore;
@@ -31,7 +33,7 @@ namespace Identity.Administration.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPut]
         public async Task<IActionResult> AddAuthorizationCode([FromBody] AuthorizationCode authorizationCode)
         {
             var result = await _authorizationCodeStore.StoreAuthorizationCodeAsync(authorizationCode);

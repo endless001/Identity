@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 
 namespace Identity.Administration.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ReferenceTokenController : ControllerBase
     {
         private readonly IReferenceTokenStore _referenceTokenStore;
@@ -23,6 +25,7 @@ namespace Identity.Administration.Controllers
             return Ok(result);
         }
 
+        [HttpPut]
         public async Task<IActionResult> AddReferenceToken(Token token)
         {
             var result = await _referenceTokenStore.StoreReferenceTokenAsync(token);

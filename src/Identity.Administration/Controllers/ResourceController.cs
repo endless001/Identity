@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Identity.Administration.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class ResourceController : ControllerBase
     {
         private readonly ResourceStore _resourceStore;

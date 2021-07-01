@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 
 namespace Identity.Administration.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class UserConsentController : ControllerBase
     {
         private readonly IUserConsentStore _userConsentStore;
