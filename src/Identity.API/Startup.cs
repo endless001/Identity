@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Identity.API.Infrastructure.Devspaces;
 using Identity.API.Infrastructure.GrantValidator;
-using Identity.API.Infrastructure.Mapping;
 using Identity.API.Infrastructure.Services;
 using IdentityServer4.Services;
 using IdentityServer4.EntityFramework.DbContexts;
@@ -88,7 +87,6 @@ namespace Identity.API
             services.Configure<UrlsConfig>(Configuration.GetSection("urls"));
             services.AddControllersWithViews();
             services.AddHealthChecks().AddCheck("self", () => HealthCheckResult.Healthy());
-            services.AddAutoMapper(typeof(MappingProfile).Assembly);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
