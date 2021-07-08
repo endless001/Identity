@@ -5,6 +5,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Identity.Administration.Infrastructure.Filters;
+using IdentityServer4.EntityFramework.Storage;
+using IdentityServer4.EntityFramework.DbContexts;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Reflection;
 
 namespace Identity.Administration
 {
@@ -26,6 +31,28 @@ namespace Identity.Administration
                 options.Filters.Add(typeof(HttpGlobalExceptionFilter));
                 options.Filters.Add(typeof(ValidateModelStateFilter));
             });
+
+            var connectionString = Configuration.GetValue<string>("ConnectionString");
+            var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
+
+            // Config DB from existing connection
+            services.AddConfigurationDbContext<ConfigurationDbContext>(options =>
+            {
+              options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
+                          new MySqlServerVersion(new Version(8, 0, 25)),
+                           sql => sql.MigrationsAssembly(migrationsAssembly));
+             });
+
+            // Operational DB from existing connection
+            services.AddOperationalDbContext<PersistedGrantDbContext>(options =>
+            {
+                options.ConfigureDbContext = builder => builder.UseMySql(connectionString,
+                new MySqlServerVersion(new Version(8, 0, 25)),
+                sql => sql.MigrationsAssembly(migrationsAssembly));
+
+            });
+
+
 
             services.AddSwaggerGen(c =>
             {
