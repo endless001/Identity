@@ -29,4 +29,7 @@
 	<Protobuf Include="Proto\account.proto" GrpcServices="Client" />
 	<Protobuf Include="Proto\message.proto" GrpcServices="Client" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
 </Project>

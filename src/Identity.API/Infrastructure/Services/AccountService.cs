@@ -14,15 +14,12 @@ namespace Identity.API.Infrastructure.Services
     {
         private readonly ILogger<AccountService> _logger;
         private readonly AccountGrpcClient _accountGrpcClient;
-        private readonly IMapper _mapper;
 
         public AccountService(ILogger<AccountService> logger,
-             AccountGrpcClient accountGrpcClient,
-          IMapper mapper)
+             AccountGrpcClient accountGrpcClient)
         {
             _logger = logger;
             _accountGrpcClient = accountGrpcClient;
-            _mapper = mapper;
         }
 
         public async Task<AccountModel> PasswordSignInAsync(string accountName, string password)
