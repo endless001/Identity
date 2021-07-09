@@ -9,28 +9,38 @@ namespace Identity.API.Configuration
         public static IEnumerable<ApiResource> GetApis()
         {
             return new List<ApiResource>
-      {
-        new ApiResource("account", "Account Service"),
-        new ApiResource("contact", "Contact Service"),
-        new ApiResource("download", "Download Service"),
-        new ApiResource("upload", "Upload Service"),
-      };
+            {
+                 new ApiResource("account", "Account Service"),
+                 new ApiResource("contact", "Contact Service"),
+                 new ApiResource("download", "Download Service"),
+                 new ApiResource("upload", "Upload Service"),
+            };
+        }
+
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new List<ApiScope>
+             {
+                 new ApiScope(name: "account",   displayName: "Account Service"),
+                 new ApiScope(name: "contact",  displayName: "Contact Service"),
+                 new ApiScope(name: "download", displayName: "Download Service"),
+                 new ApiScope(name: "upload", displayName: "Upload Service")
+             };
         }
 
         public static IEnumerable<IdentityResource> GetResources()
         {
             return new List<IdentityResource>
             {
-        new IdentityResources.OpenId(),
-        new IdentityResources.Profile(),
-
+              new IdentityResources.OpenId(),
+              new IdentityResources.Profile(),
             };
         }
 
         public static IEnumerable<Client> GetClients(Dictionary<string, string> clientsUrl)
         {
             return new List<Client>
-      {
+        {
         new Client()
         {
 
@@ -63,7 +73,7 @@ namespace Identity.API.Configuration
           },
           ClientUri = $"{clientsUrl["Chat"]}",
           AllowedGrantTypes = GrantTypes.Implicit,
-          AllowAccessTokensViaBrowser = true,
+          AllowAccessTokensViaBrowser = false,
           RequireConsent = true,
           AllowOfflineAccess = true,
           AlwaysIncludeUserClaimsInIdToken = true,
@@ -89,7 +99,7 @@ namespace Identity.API.Configuration
           AccessTokenLifetime = 60 * 60 * 2, // 2 hours
           IdentityTokenLifetime = 60 * 60 * 2 // 2 hours
         }
-            };
-        }
+        };
+     }
     }
 }

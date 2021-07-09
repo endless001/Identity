@@ -65,6 +65,16 @@ namespace Identity.API.Data
 
                 await context.SaveChangesAsync();
             }
+
+            if (!context.ApiScopes.Any())
+            {
+                foreach (var scope in Config.GetApiScopes())
+                {
+                    context.ApiScopes.Add(scope.ToEntity());
+                }
+
+                await context.SaveChangesAsync();
+            }
         }
     }
 }

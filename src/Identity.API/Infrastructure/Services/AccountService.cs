@@ -30,7 +30,11 @@ namespace Identity.API.Infrastructure.Services
                 Password = password
             };
             var response = await _accountGrpcClient.PasswordSignInAsync(request);
-            return MapResponse(response);
+            if (response is null)
+            {
+                return null;
+            }
+            return  MapResponse(response);
          }
 
         public async Task<AccountModel> RegisterEmailAsync(string email, string password)
@@ -41,6 +45,10 @@ namespace Identity.API.Infrastructure.Services
                 Password = password
             };
             var response = await _accountGrpcClient.RegisterEmailAsync(request);
+            if (response is null)
+            {
+                return null;
+            }
             return MapResponse(response);
         }
 
