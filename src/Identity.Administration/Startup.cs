@@ -51,7 +51,7 @@ namespace Identity.Administration
                 sql => sql.MigrationsAssembly(migrationsAssembly));
 
             });
-
+          
 
 
             services.AddSwaggerGen(c =>

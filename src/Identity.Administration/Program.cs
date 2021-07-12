@@ -54,8 +54,8 @@ namespace Identity.Administration
         }
         private static (int httpPort, int grpcPort) GetDefinedPorts(IConfiguration config)
         {
-            var grpcPort = config.GetValue("GRPC_PORT", 10001);
-            var port = config.GetValue("PORT", 10000);
+            var grpcPort = config.GetValue("GRPC_PORT", 9001);
+            var port = config.GetValue("PORT", 9000);
             return (port, grpcPort);
         }
 

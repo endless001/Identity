@@ -1,4 +1,5 @@
-﻿using IdentityServer4.Stores;
+﻿using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,12 +12,18 @@ namespace Identity.Administration.Controllers
     [ApiController]
     public class PersistedGrantController : ControllerBase
     {
-        private readonly IPersistedGrantStore _persistedGrantStore;
+        private readonly PersistedGrantDbContext _persistedGrantDbContext;
 
-        public PersistedGrantController(IPersistedGrantStore persistedGrantStore)
+        public PersistedGrantController(PersistedGrantDbContext persistedGrantDbContext)
         {
-            _persistedGrantStore = persistedGrantStore;
+            _persistedGrantDbContext = persistedGrantDbContext;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> FindPersistedGrantById(string id)
+        {
+            var result = await _persistedGrantDbContext.PersistedGrants.FindAsync(id);
+            return Ok(result);
+        }
     }
 }

@@ -13,18 +13,16 @@ namespace Identity.Administration.Controllers
     [ApiController]
     public class ClientController:ControllerBase
     {
-        private readonly IClientStore _clientStore;
         private readonly ConfigurationDbContext _configurationDbContext;
-        public ClientController(IClientStore clientStore, ConfigurationDbContext configurationDbContext)
+        public ClientController(ConfigurationDbContext configurationDbContext)
         {
-            _clientStore = clientStore;
             _configurationDbContext = configurationDbContext;
         }
 
         [HttpGet]
         public async Task<IActionResult> FindClientById(string clientId)
         {
-            var result = await _clientStore.FindClientByIdAsync(clientId);
+            var result = await _configurationDbContext.Clients.FindAsync(clientId);
             return Ok(result);
         }
 
