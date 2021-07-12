@@ -1,4 +1,6 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -22,6 +24,36 @@ namespace Identity.Administration.Controllers
         public async Task<IActionResult> FindApiScopeById(string id)
         {
             var result = await _configurationDbContext.ApiScopes.FindAsync(id);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemoveApiScope(string id)
+        {
+            var entity = await _configurationDbContext.ApiScopes.FindAsync(id);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            var result = _configurationDbContext.ApiScopes.Remove(entity);
+            await _configurationDbContext.SaveChangesAsync();
+            return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> AddApiScope([FromBody] ApiScope model)
+        {
+            var result = _configurationDbContext.ApiScopes.Add(model.ToEntity());
+            await _configurationDbContext.SaveChangesAsync();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateApiScope([FromBody] ApiScope model)
+        {
+            var result = _configurationDbContext.ApiScopes.Update(model.ToEntity());
+            await _configurationDbContext.SaveChangesAsync();
             return Ok(result);
         }
     }

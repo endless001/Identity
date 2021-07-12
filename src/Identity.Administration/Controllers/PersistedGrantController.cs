@@ -1,4 +1,6 @@
 ﻿using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using IdentityServer4.Stores;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -23,6 +25,36 @@ namespace Identity.Administration.Controllers
         public async Task<IActionResult> FindPersistedGrantById(string id)
         {
             var result = await _persistedGrantDbContext.PersistedGrants.FindAsync(id);
+            return Ok(result);
+        }
+
+        [HttpDelete]
+        public async Task<IActionResult> RemovePersistedGrant(string id)
+        {
+            var entity = await _persistedGrantDbContext.PersistedGrants.FindAsync(id);
+            if (entity == null)
+            {
+                return NotFound();
+            }
+
+            var result = _persistedGrantDbContext.PersistedGrants.Remove(entity);
+            await _persistedGrantDbContext.SaveChangesAsync();
+            return Ok(result);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> AddPersistedGrant([FromBody] PersistedGrant model)
+        {
+            var result = _persistedGrantDbContext.PersistedGrants.Add(model.ToEntity());
+            await _persistedGrantDbContext.SaveChangesAsync();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePersistedGrant([FromBody] PersistedGrant model)
+        {
+            var result = _persistedGrantDbContext.PersistedGrants.Update(model.ToEntity());
+            await _persistedGrantDbContext.SaveChangesAsync();
             return Ok(result);
         }
     }
