@@ -10,6 +10,10 @@ using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Reflection;
+using Rbac.Configuration.DependencyInjection;
+using Sail.EntityFramework.Storage.Extensions;
+using Rbac.Middleware;
+using Identity.Administration.Infrastructure.Extensions;
 
 namespace Identity.Administration
 {
@@ -51,9 +55,26 @@ namespace Identity.Administration
                 sql => sql.MigrationsAssembly(migrationsAssembly));
 
             });
-          
+            services.AddCustomAuthentication(Configuration);
+            services.AddCors(options =>
+            {
+                options.AddPolicy("CorsPolicy",
+                    builder => builder
+                    .SetIsOriginAllowed((host) => true)
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials());
+            });
 
-
+            services.AddRbac().
+              AddConfigurationStore(options =>
+              {
+                  options.ConfigureDbContext = b =>
+                  {
+                      b.UseMySql(connectionString, new MySqlServerVersion(new Version(8, 0, 25)),
+                          dbOpts => dbOpts.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name));
+                  };
+              });
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Identity.Administration", Version = "v1" });
@@ -71,13 +92,15 @@ namespace Identity.Administration
             }
 
             app.UseRouting();
-
+            app.UseCors("CorsPolicy");
+            app.UseAuthentication();
             app.UseAuthorization();
 
+            app.UseRbac();
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-
+                endpoints.MapControllers()
+                .RequireAuthorization("ApiScope"); ;
             });
         }
     }
