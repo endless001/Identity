@@ -33,7 +33,7 @@ namespace Identity.Administration.Controllers
             var entity = await _configurationDbContext.ApiScopes.FindAsync(id);
             if (entity == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var result = _configurationDbContext.ApiScopes.Remove(entity);

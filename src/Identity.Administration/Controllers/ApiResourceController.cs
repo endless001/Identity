@@ -28,7 +28,7 @@ namespace Identity.Administration.Controllers
             var entity = await _configurationDbContext.ApiResources.FindAsync(id);
             if (entity == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var result = _configurationDbContext.ApiResources.Remove(entity);

@@ -32,7 +32,7 @@ namespace Identity.Administration.Controllers
             var entity = await _configurationDbContext.Clients.FindAsync(clientId);
             if (entity == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var result = _configurationDbContext.Clients.Remove(entity);

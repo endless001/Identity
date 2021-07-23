@@ -34,7 +34,7 @@ namespace Identity.Administration.Controllers
             var entity = await _persistedGrantDbContext.PersistedGrants.FindAsync(id);
             if (entity == null)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             var result = _persistedGrantDbContext.PersistedGrants.Remove(entity);
