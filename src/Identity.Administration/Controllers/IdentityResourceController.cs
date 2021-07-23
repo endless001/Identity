@@ -17,13 +17,13 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindIdentityResourceById(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var result = await _configurationDbContext.IdentityResources.FindAsync(id);
             return Ok(result);
         }
         [HttpDelete]
-        public async Task<IActionResult> RemoveIdentityResource(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var entity = await _configurationDbContext.IdentityResources.FindAsync(id);
             if (entity == null)
@@ -37,7 +37,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> AddIdentityResource([FromBody] IdentityResource model)
+        public async Task<IActionResult> Create([FromBody] IdentityResource model)
         {
             var result = _configurationDbContext.IdentityResources.Add(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();
@@ -45,7 +45,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateIdentityResource([FromBody] IdentityResource model)
+        public async Task<IActionResult> Update([FromBody] IdentityResource model)
         {
             var result = _configurationDbContext.IdentityResources.Update(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();

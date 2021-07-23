@@ -17,13 +17,13 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindApiResourceById(string id)
+        public async Task<IActionResult> Get(string id)
         {
             var result = await _configurationDbContext.ApiResources.FindAsync(id);
             return Ok(result);
         }
         [HttpDelete]
-        public async Task<IActionResult> RemoveApiResource(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var entity = await _configurationDbContext.ApiResources.FindAsync(id);
             if (entity == null)
@@ -37,7 +37,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> AddApiResource([FromBody] ApiResource model)
+        public async Task<IActionResult> Create([FromBody] ApiResource model)
         {
             var result = _configurationDbContext.ApiResources.Add(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();
@@ -45,7 +45,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateApiResource([FromBody] ApiResource model)
+        public async Task<IActionResult> Update([FromBody] ApiResource model)
         {
             var result = _configurationDbContext.ApiResources.Update(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();

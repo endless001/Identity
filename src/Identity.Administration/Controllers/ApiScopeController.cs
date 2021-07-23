@@ -21,14 +21,14 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindApiScopeById(string id)
+        public async Task<IActionResult> Get(string id)
         {
             var result = await _configurationDbContext.ApiScopes.FindAsync(id);
             return Ok(result);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> RemoveApiScope(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var entity = await _configurationDbContext.ApiScopes.FindAsync(id);
             if (entity == null)
@@ -42,7 +42,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> AddApiScope([FromBody] ApiScope model)
+        public async Task<IActionResult> Create([FromBody] ApiScope model)
         {
             var result = _configurationDbContext.ApiScopes.Add(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();
@@ -50,7 +50,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateApiScope([FromBody] ApiScope model)
+        public async Task<IActionResult> Update([FromBody] ApiScope model)
         {
             var result = _configurationDbContext.ApiScopes.Update(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();

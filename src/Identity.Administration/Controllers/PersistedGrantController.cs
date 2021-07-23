@@ -22,14 +22,14 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindPersistedGrantById(string id)
+        public async Task<IActionResult> Get(string id)
         {
             var result = await _persistedGrantDbContext.PersistedGrants.FindAsync(id);
             return Ok(result);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> RemovePersistedGrant(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var entity = await _persistedGrantDbContext.PersistedGrants.FindAsync(id);
             if (entity == null)
@@ -43,7 +43,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> AddPersistedGrant([FromBody] PersistedGrant model)
+        public async Task<IActionResult> Create([FromBody] PersistedGrant model)
         {
             var result = _persistedGrantDbContext.PersistedGrants.Add(model.ToEntity());
             await _persistedGrantDbContext.SaveChangesAsync();
@@ -51,7 +51,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePersistedGrant([FromBody] PersistedGrant model)
+        public async Task<IActionResult> Update([FromBody] PersistedGrant model)
         {
             var result = _persistedGrantDbContext.PersistedGrants.Update(model.ToEntity());
             await _persistedGrantDbContext.SaveChangesAsync();

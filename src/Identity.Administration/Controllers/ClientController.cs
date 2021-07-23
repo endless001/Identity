@@ -20,14 +20,14 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> FindClientById(string clientId)
+        public async Task<IActionResult> Get(string clientId)
         {
             var result = await _configurationDbContext.Clients.FindAsync(clientId);
             return Ok(result);
         }
 
         [HttpDelete]
-        public async Task<IActionResult> RemoveClient(string clientId)
+        public async Task<IActionResult> Delete(string clientId)
         {
             var entity = await _configurationDbContext.Clients.FindAsync(clientId);
             if (entity == null)
@@ -41,7 +41,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> AddClient([FromBody] Client model)
+        public async Task<IActionResult> Create([FromBody] Client model)
         {
             var result = _configurationDbContext.Clients.Add(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();
@@ -49,7 +49,7 @@ namespace Identity.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateClient([FromBody] Client model)
+        public async Task<IActionResult> Update([FromBody] Client model)
         {
             var result = _configurationDbContext.Clients.Update(model.ToEntity());
             await _configurationDbContext.SaveChangesAsync();

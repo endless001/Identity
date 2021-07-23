@@ -50,17 +50,15 @@ namespace Identity.Administration.Controllers
             return Ok(model);
         }
 
-
-
         [HttpGet("{id}")]
-        public async Task<IActionResult> FindRoleById(int id)
+        public async Task<IActionResult> Get(int id)
         {
             var result = await _configurationDbContext.Roles.FindAsync(id);
             return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddRole([FromBody] Role model)
+        public async Task<IActionResult> Create([FromBody] Role model)
         {
             _configurationDbContext.Roles.Add(model.ToEntity());
             var result = await _configurationDbContext.SaveChangesAsync();
