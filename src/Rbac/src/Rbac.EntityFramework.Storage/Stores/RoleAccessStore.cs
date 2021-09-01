@@ -26,8 +26,8 @@ namespace Rbac.EntityFramework.Storage.Stores
 
         public async Task<bool> AllowAccessAsync(int roleId, int resourceId)
         {
-            var result = await Context.RoleAccesss.CountAsync(a => a.RoleId == roleId && a.ResourceId == resourceId);
-            return !(result > 0) ;
+            var result = await Context.RoleAccesss.FirstOrDefaultAsync(a => a.RoleId == roleId && a.ResourceId == resourceId);
+            return !(result != null);
         }
 
         public async Task<List<RoleAccess>> GetRoleAccessAsync(int roleId)
